@@ -41,6 +41,11 @@ def init_telemetry(
     tracer_provider.add_span_processor(
         BatchSpanProcessor(_create_span_exporter(export_mode))
     )
+    if export_mode == "cloud":
+        from .exporters import GCPLoggingExporter
+        tracer_provider.add_span_processor(
+            BatchSpanProcessor(GCPLoggingExporter(project_id=config.GCP_PROJECT))
+        )
     trace.set_tracer_provider(tracer_provider)
 
     # métricas
