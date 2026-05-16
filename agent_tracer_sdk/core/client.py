@@ -38,20 +38,24 @@ def init_telemetry(
 
     # traces
     tracer_provider = TracerProvider(resource=resource)
+    
+    # SimpleSpanProcessor garante que o export ocorra na mesma thread ANTES do Cloud Run congelar a CPU!
+    from opentelemetry.sdk.trace.export import SimpleSpanProcessor
+    
     tracer_provider.add_span_processor(
-        BatchSpanProcessor(_create_span_exporter(export_mode))
+        SimpleSpanProcessor(_create_span_exporter(export_mode))
     )
     if export_mode == "cloud":
         from .exporters import GCPLoggingExporter
         tracer_provider.add_span_processor(
-            BatchSpanProcessor(GCPLoggingExporter(project_id=config.GCP_PROJECT))
+            SimpleSpanProcessor(GCPLoggingExporter(project_id=config.GCP_PROJECT))
         )
     
     # Adiciona o exporter do MLflow se a URL estiver configurada
     if config.MLFLOW_API_URL:
         from .exporters import MLFlowAPIExporter
         tracer_provider.add_span_processor(
-            BatchSpanProcessor(MLFlowAPIExporter(api_url=config.MLFLOW_API_URL))
+            SimpleSpanProcessor(MLFlowAPIExporter(api_url=config.MLFLOW_API_URL))
         )
 
     trace.set_tracer_provider(tracer_provider)
