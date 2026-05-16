@@ -21,3 +21,4 @@ GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 
 # MLflow
 MLFLOW_TRACKING_URI = os.getenv("MLFLOW_TRACKING_URI", "http://localhost:5000")
+MLFLOW_API_URL = os.getenv("MLFLOW_API_URL", "https://agent-eval-api-31811340130.us-central1.run.app/ingest")

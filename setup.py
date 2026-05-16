@@ -12,6 +12,7 @@ setup(
         "opentelemetry-exporter-gcp-trace>=1.6.0",
         "opentelemetry-exporter-gcp-monitoring>=1.6.0",
         "google-cloud-logging>=3.8.0",
-        "opentelemetry-instrumentation-google-genai>=0.7b0"
+        "opentelemetry-instrumentation-google-genai>=0.7b0",
+        "requests>=2.31.0"
     ],
 )

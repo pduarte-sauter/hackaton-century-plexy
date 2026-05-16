@@ -46,6 +46,14 @@ def init_telemetry(
         tracer_provider.add_span_processor(
             BatchSpanProcessor(GCPLoggingExporter(project_id=config.GCP_PROJECT))
         )
+    
+    # Adiciona o exporter do MLflow se a URL estiver configurada
+    if config.MLFLOW_API_URL:
+        from .exporters import MLFlowAPIExporter
+        tracer_provider.add_span_processor(
+            BatchSpanProcessor(MLFlowAPIExporter(api_url=config.MLFLOW_API_URL))
+        )
+
     trace.set_tracer_provider(tracer_provider)
 
     # métricas
@@ -89,8 +97,10 @@ def _create_span_exporter(mode: str):
 def _create_metric_exporter(mode: str):
     """Cria o exporter de métricas baseado no modo."""
     if mode == "cloud":
-        from opentelemetry.exporter.cloud_monitoring import CloudMonitoringMetricsExporter
-        return CloudMonitoringMetricsExporter()
+        # Desabilitado para evitar erro 403 de IAM no Cloud Run
+        # Já que a análise será feita no MLflow e BigQuery.
+        import os
+        return ConsoleMetricExporter(out=open(os.devnull, "w"))
 
     if mode == "otlp":
         from opentelemetry.exporter.otlp.proto.http.metric_exporter import OTLPMetricExporter
