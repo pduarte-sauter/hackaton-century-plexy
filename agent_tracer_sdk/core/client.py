@@ -83,8 +83,11 @@ def shutdown():
 def _create_span_exporter(mode: str):
     """Cria o exporter de spans baseado no modo."""
     if mode == "cloud":
-        from opentelemetry.exporter.cloud_trace import CloudTraceSpanExporter
-        return CloudTraceSpanExporter(project_id=config.GCP_PROJECT)
+        # Desabilitado para evitar erro 403 de IAM no Cloud Trace
+        # Mantendo apenas o GCPLoggingExporter (BigQuery) e MLFlow
+        import os
+        from opentelemetry.sdk.trace.export import ConsoleSpanExporter
+        return ConsoleSpanExporter(out=open(os.devnull, "w"))
 
     if mode == "otlp":
         from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
